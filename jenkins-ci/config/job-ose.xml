@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>ls /var/lib/openshift.bin
+OSE_SERVER=&quot;https://192.168.59.107:8443&quot;
+OSE_USERNAME=&quot;joe&quot;
+/var/lib/openshift.bin/osc login --server=&quot;$OSE_SERVER&quot; --password=&quot;$OSE_PASSWORD&quot; --username=&quot;$OSE_USERNAME&quot; --insecure-skip-tls-verify=true</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers>
+    <com.michelin.cio.hudson.plugins.maskpasswords.MaskPasswordsBuildWrapper>
+      <varPasswordPairs>
+        <varPasswordPair var="OSE_PASSWORD" password="5w7j+kV/kA+jMmLpEzBuIWL8Fm3y/C45eLV+c5xCKMY="/>
+      </varPasswordPairs>
+    </com.michelin.cio.hudson.plugins.maskpasswords.MaskPasswordsBuildWrapper>
+  </buildWrappers>
+</project>

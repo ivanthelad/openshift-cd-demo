@@ -24,7 +24,8 @@ RUN wget -O /var/lib/jenkins/plugins/javadoc.hpi 					http://updates.jenkins-ci.
 RUN wget -O /var/lib/jenkins/plugins/delivery-pipeline-plugin.hpi 	https://updates.jenkins-ci.org/download/plugins/delivery-pipeline-plugin/0.8.6/delivery-pipeline-plugin.hpi
 RUN wget -O /var/lib/jenkins/plugins/token-macro.hpi 				https://updates.jenkins-ci.org/download/plugins/token-macro/1.9/token-macro.hpi
 RUN wget -O /var/lib/jenkins/plugins/jquery-ui.hpi 					https://updates.jenkins-ci.org/download/plugins/jquery-ui/1.0.2/jquery-ui.hpi
-
+RUN wget -O /var/lib/jenkins/plugins/ssh.hpi    https://updates.jenkins-ci.org/latest/ssh.hpi
+RUN wget -O /var/lib/jenkins/plugins/mask-password.hpi http://updates.jenkins-ci.org/latest/mask-passwords.hpi
 # Jenkins Settings
 ADD config/jenkins-config.xml /var/lib/jenkins/config.xml
 
@@ -38,7 +39,7 @@ ADD config/sonar-settings.xml /var/lib/jenkins/hudson.plugins.sonar.SonarPublish
 ADD config/openshift-settings.xml /var/lib/jenkins/org.jenkinsci.plugins.openshift.DeployApplication.xml
 
 # Build Jobs
-RUN mkdir -p /var/lib/jenkins/jobs/ticket-monster-{analysis,build,deploy-dev,func-test,release,test}
+RUN mkdir -p /var/lib/jenkins/jobs/ticket-monster-{analysis,ose,build,deploy-dev,func-test,release,test}
 
 ADD config/job-analysis.xml 		/var/lib/jenkins/jobs/ticket-monster-analysis/config.xml
 ADD config/job-build.xml 			/var/lib/jenkins/jobs/ticket-monster-build/config.xml
@@ -51,10 +52,20 @@ ADD config/job-test-func.xml 		/var/lib/jenkins/jobs/ticket-monster-test-func/co
 ADD config/job-test-int.xml 		/var/lib/jenkins/jobs/ticket-monster-test-int/config.xml
 ADD config/job-test-sys.xml 		/var/lib/jenkins/jobs/ticket-monster-test-sys/config.xml
 ADD config/job-test-perf.xml 		/var/lib/jenkins/jobs/ticket-monster-test-perf/config.xml
-
+RUN mkdir -p /var/lib/jenkins/jobs/sample-ruby
+ADD config/job-custom.xml /var/lib/jenkins/jobs/sample-ruby/config.xml
+ADD config/job-ose.xml /var/lib/jenkins/jobs/ticket-monster-ose/config.xml
 # Disable SNI Extension
+ADD repository/repository /var/lib/jenkins/.m2/repository 
+RUN wget -O openshift4.4.tar.gz https://github.com/openshift/origin/releases/download/v0.4.4/openshift-origin-v0.4.4-bc67c99-linux-amd64.tar.gz
+RUN mkdir /var/lib/openshift.bin
+RUN tar -xvf openshift4.4.tar.gz -C /var/lib/openshift.bin
+
 RUN sed -i "s/JENKINS_JAVA_OPTIONS/#JENKINS_JAVA_OPTIONS/g" /etc/sysconfig/jenkins
 RUN echo "JENKINS_JAVA_OPTIONS=\"-Djava.awt.headless=true -Djsse.enableSNIExtension=false\"" >> /etc/sysconfig/jenkins
 
 # Set Permissions
 RUN chown -R jenkins:jenkins /var/lib/jenkins
+RUN chown -R jenkins:jenkins /var/lib/openshift.bin
+#Add executable ose scripts 
+ENV PATH /var/lib/openshift.bin:$PATH

@@ -7,7 +7,7 @@ nexus:
   ports:
     - "8081:8081"
 jenkins:
-  build: ./jenkins-ci
+  image: ivanthelad/jenkins-ci:6
   links:
      - nexus:nexus
      - sonar:sonar
